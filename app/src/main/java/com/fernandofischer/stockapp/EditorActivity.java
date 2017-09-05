@@ -3,6 +3,7 @@ package com.fernandofischer.stockapp;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,10 +14,12 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -33,6 +36,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private EditText mSupplierEditText;
     private EditText mQuantityEditText;
     private EditText mPriceEditText;
+    private EditText mSupplierEmailEditText;
+    private Button mOrderItemsButton;
+
+    private Button mButtonAdd;
+    private Button mButtonSub;
+    final Context c = this;
 
     private boolean mProductHasChanged = false;
 
@@ -58,42 +67,132 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         Intent intent = getIntent();
         mCurrentProductUri = intent.getData();
 
+        mNameEditText = (EditText) findViewById(R.id.edit_product_name);
+        mSupplierEditText = (EditText) findViewById(R.id.edit_product_supplier);
+        mSupplierEmailEditText = (EditText) findViewById(R.id.edit_product_supplier_email);
+        mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
+        mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
+        mOrderItemsButton = (Button) findViewById(R.id.order_items);
+
+        mNameEditText.setOnTouchListener(mTouchListener);
+        mSupplierEditText.setOnTouchListener(mTouchListener);
+        mSupplierEmailEditText.setOnTouchListener(mTouchListener);
+        mQuantityEditText.setOnTouchListener(mTouchListener);
+        mPriceEditText.setOnTouchListener(mTouchListener);
+
         // If the intent DOES NOT contain a product content URI, then we know that we are
         // creating a new product.
         if (mCurrentProductUri == null) {
             setTitle(getString(R.string.editor_activity_title_new_product));
-
             invalidateOptionsMenu();
+            mOrderItemsButton.setVisibility(View.GONE);
         } else {
             // Otherwise this is an existing product, so change app bar to say "Edit Product"
             setTitle(getString(R.string.editor_activity_title_edit_product));
-
+            mOrderItemsButton.setVisibility(View.VISIBLE);
             // Initialize a loader to read the product data from the database
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
         }
 
-        mNameEditText = (EditText) findViewById(R.id.edit_product_name);
-        mSupplierEditText = (EditText) findViewById(R.id.edit_product_supplier);
-        mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
-        mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
+        // the button for adding items
+        mButtonAdd = (Button) findViewById(R.id.add_quantity);
+        mButtonAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(c);
+                View mView = layoutInflaterAndroid.inflate(R.layout.quantity_input_dialog, null);
+                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(c);
+                alertDialogBuilderUserInput.setView(mView);
 
-        mNameEditText.setOnTouchListener(mTouchListener);
-        mSupplierEditText.setOnTouchListener(mTouchListener);
-        mQuantityEditText.setOnTouchListener(mTouchListener);
-        mPriceEditText.setOnTouchListener(mTouchListener);
+                final EditText userInputDialogEditText = (EditText) mView.findViewById(R.id.userInputDialog);
+                alertDialogBuilderUserInput
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
+                                int actualQuantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                                int diffQuantity = Integer.parseInt(userInputDialogEditText.getText().toString());
+                                Integer result = actualQuantity + diffQuantity;
+                                mQuantityEditText.setText( result.toString() );
+                            }
+                        })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialogBox, int id) {
+                                        dialogBox.cancel();
+                                    }
+                                });
+                AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+                alertDialogAndroid.show();
+            }
+        });
+
+        // the button for substracting items
+        mButtonSub = (Button) findViewById(R.id.sub_quantity);
+        mButtonSub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(c);
+                View mView = layoutInflaterAndroid.inflate(R.layout.quantity_input_dialog, null);
+                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(c);
+                alertDialogBuilderUserInput.setView(mView);
+
+                final EditText userInputDialogEditText = (EditText) mView.findViewById(R.id.userInputDialog);
+                alertDialogBuilderUserInput
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
+                                int actualQuantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                                int diffQuantity = Integer.parseInt(userInputDialogEditText.getText().toString());
+                                Integer result = actualQuantity - diffQuantity;
+                                mQuantityEditText.setText( result.toString() );
+                            }
+                        })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialogBox, int id) {
+                                        dialogBox.cancel();
+                                    }
+                                });
+                AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+                alertDialogAndroid.show();
+            }
+        });
+
+        // The button for ordering more items
+        mOrderItemsButton.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                sendSupplierEmail();
+                                            }
+                                        }
+        );
+
+    }
+
+    private void sendSupplierEmail() {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
+        intent.putExtra(Intent.EXTRA_EMAIL, mSupplierEmailEditText.getText().toString());
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject) + mNameEditText.getText().toString());
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     private boolean saveProduct() {
         try {
             String nameString = mNameEditText.getText().toString().trim();
             String supplierString = mSupplierEditText.getText().toString().trim();
+            String supplierEmailString = mSupplierEmailEditText.getText().toString().trim();
             String priceString = mPriceEditText.getText().toString().trim();
             String quantityString = mQuantityEditText.getText().toString().trim();
 
             // Check if this is supposed to be a new product and if the fields are not blank
             if (mCurrentProductUri == null &&
-                    TextUtils.isEmpty(nameString) && TextUtils.isEmpty(supplierString) &&
+                    TextUtils.isEmpty(nameString) && TextUtils.isEmpty(supplierString) && TextUtils.isEmpty(supplierEmailString) &&
                     TextUtils.isEmpty(priceString) && TextUtils.isEmpty(quantityString)) {
                 return true;
             }
@@ -101,6 +200,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             ContentValues values = new ContentValues();
             values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
             values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplierString);
+            values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL, supplierEmailString);
             int quantity = 0;
             if (!TextUtils.isEmpty(quantityString)) {
                 quantity = Integer.parseInt(quantityString);
@@ -320,6 +420,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductEntry.COLUMN_PRODUCT_QUANTITY,
                 ProductEntry.COLUMN_PRODUCT_SUPPLIER,
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL,
                 ProductEntry.COLUMN_PRODUCT_NAME};
 
         // This loader will execute the ContentProvider's query method on a background thread
@@ -338,16 +439,24 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
             int supplierColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
+            int supplierEmailColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL);
 
             String name = cursor.getString(nameColumnIndex);
             String quantity = cursor.getString(quantityColumnIndex);
             String price = Utils.priceToString(cursor.getInt(priceColumnIndex));
             String supplier = cursor.getString(supplierColumnIndex);
+            String supplierEmail = cursor.getString(supplierEmailColumnIndex);
 
             mNameEditText.setText(name);
             mQuantityEditText.setText(quantity);
             mPriceEditText.setText(price);
             mSupplierEditText.setText(supplier);
+            mSupplierEmailEditText.setText(supplierEmail);
+
+            if (!TextUtils.isEmpty(supplierEmail)) {
+                mOrderItemsButton.setEnabled(true);
+            }
+
         }
     }
 
@@ -357,6 +466,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mQuantityEditText.setText("");
         mPriceEditText.setText("");
         mSupplierEditText.setText("");
+        mSupplierEmailEditText.setText("");
     }
 
     // } LoaderManager methods

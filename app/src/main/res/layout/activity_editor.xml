@@ -14,7 +14,7 @@
 
         <TextView
             style="@style/CategoryStyle"
-            android:text="@string/category_overview" />
+            android:text="@string/product_name" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -26,14 +26,8 @@
             <EditText
                 android:id="@+id/edit_product_name"
                 style="@style/EditorFieldStyle"
-                android:hint="@string/hint_name"
                 android:inputType="textCapWords" />
 
-            <EditText
-                android:id="@+id/edit_product_supplier"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/hint_supplier"
-                android:inputType="textCapWords" />
         </LinearLayout>
     </LinearLayout>
 
@@ -81,9 +75,62 @@
             <EditText
                 android:id="@+id/edit_product_quantity"
                 style="@style/EditorFieldStyle"
+                android:layout_width="100dp"
                 android:inputType="number" />
 
+            <Button
+                android:id="@+id/sub_quantity"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/edit_product_quantity"
+                android:text="-"/>
+
+            <Button
+                android:id="@+id/add_quantity"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/sub_quantity"
+                android:text="+"/>
+
         </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/CategoryStyle"
+            android:text="@string/supplier_overview" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:paddingLeft="4dp">
+
+            <EditText
+                android:id="@+id/edit_product_supplier"
+                style="@style/EditorFieldStyle"
+                android:hint="@string/hint_supplier"
+                android:inputType="textCapWords" />
+
+            <EditText
+                android:id="@+id/edit_product_supplier_email"
+                style="@style/EditorFieldStyle"
+                android:hint="@string/hint_supplier_email"
+                android:inputType="textEmailAddress" />
+
+            <Button
+                android:id="@+id/order_items"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/order_items"/>
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
