@@ -28,5 +28,5 @@
     <string name="hint_supplier_email">Supplier\'s email</string>
     <string name="order_items">Order items</string>
     <string name="email_subject">Order request:</string>
-
+    <string name="quantity_must_positive">Quantity must be positive</string>
 </resources>

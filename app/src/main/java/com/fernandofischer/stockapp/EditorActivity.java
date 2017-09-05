@@ -111,7 +111,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogBox, int id) {
                                 mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
-                                int actualQuantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                                int actualQuantity = 0;
+                                if (mQuantityEditText.getText().length() > 0) {
+                                    actualQuantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                                }
                                 int diffQuantity = Integer.parseInt(userInputDialogEditText.getText().toString());
                                 Integer result = actualQuantity + diffQuantity;
                                 mQuantityEditText.setText( result.toString() );
@@ -147,7 +150,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                                 int actualQuantity = Integer.parseInt(mQuantityEditText.getText().toString());
                                 int diffQuantity = Integer.parseInt(userInputDialogEditText.getText().toString());
                                 Integer result = actualQuantity - diffQuantity;
-                                mQuantityEditText.setText( result.toString() );
+                                if (result >= 0) {
+                                    mQuantityEditText.setText(result.toString());
+                                } else {
+                                    Toast.makeText(c, getString(R.string.quantity_must_positive), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         })
                         .setNegativeButton("Cancel",
@@ -177,9 +184,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         intent.setData(Uri.parse("mailto:"));
         intent.putExtra(Intent.EXTRA_EMAIL, mSupplierEmailEditText.getText().toString());
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject) + mNameEditText.getText().toString());
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
+
+        startActivity(Intent.createChooser(intent, getString(R.string.email_subject)));
     }
 
     private boolean saveProduct() {
@@ -206,9 +212,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 quantity = Integer.parseInt(quantityString);
             }
             values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, quantity);
-            int price = 0;
+            String price = null;
             if (!TextUtils.isEmpty(priceString)) {
-                price = Utils.priceToInt(priceString);
+                price = String.valueOf(Utils.priceToInt(priceString));
             }
             values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
 

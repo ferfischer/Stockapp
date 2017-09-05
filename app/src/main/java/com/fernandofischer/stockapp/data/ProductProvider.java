@@ -110,6 +110,11 @@ public class ProductProvider extends ContentProvider {
             throw new IllegalArgumentException("Product requires a supplier");
         }
 
+        String price = values.getAsString(ProductEntry.COLUMN_PRODUCT_PRICE);
+        if ( TextUtils.isEmpty(price) ) {
+            throw new IllegalArgumentException("Product requires a price");
+        }
+
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         Long id = db.insert(ProductEntry.TABLE_NAME, null, values);
 
@@ -157,6 +162,13 @@ public class ProductProvider extends ContentProvider {
             String supplier = values.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
             if ( TextUtils.isEmpty(supplier) ) {
                 throw new IllegalArgumentException("Product requires a supplier");
+            }
+        }
+
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE)) {
+            String price = values.getAsString(ProductEntry.COLUMN_PRODUCT_PRICE);
+            if (TextUtils.isEmpty(price)) {
+                throw new IllegalArgumentException("Product requires a price");
             }
         }
 
