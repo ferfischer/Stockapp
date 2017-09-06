@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/activity_margin"
-    tools:context=".EditorActivity">
+    tools:context=".EditorActivity"
+    android:weightSum="1">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -132,5 +133,20 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/container_sell"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/sell_product"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/sell_product" />
+
+    </RelativeLayout>
 
 </LinearLayout>

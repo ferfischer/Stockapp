@@ -41,6 +41,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private Button mButtonAdd;
     private Button mButtonSub;
+    private Button mButtonSell;
     final Context c = this;
 
     private boolean mProductHasChanged = false;
@@ -165,6 +166,22 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                                 });
                 AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
                 alertDialogAndroid.show();
+            }
+        });
+
+        // the button for selling 1 product
+        mButtonSell = (Button) findViewById(R.id.sell_product);
+        mButtonSell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
+                int actualQuantity = Integer.parseInt(mQuantityEditText.getText().toString());
+                Integer result = actualQuantity - 1;
+                if (result >= 0) {
+                    mQuantityEditText.setText(result.toString());
+                } else {
+                    Toast.makeText(c, getString(R.string.quantity_nothing_to_sell), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
